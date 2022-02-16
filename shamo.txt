@@ -1,0 +1,419 @@
+Laravel Jetstream - jetstream.laravel.com
+
+Laravel DataTables (github.com/yajra/laravel-datatables)
+- composer require yajra/laravel-datatables-oracle:"~9.0" ( install di folder project laravel )
+setelah install selesai dengan GitBash, lalu jalankan
+- php artisan vendor:publish --provider="Yajra\DataTables\DataTablesServiceProvider"
+tujuan fungsi diatas ialah, yaitu menambahkan file config datatables pada project laravel
+[\vendor\yajra\laravel-datatables-oracle\src\config\datatables.php] To [\config\datatables.php]
+
+-- ekstensi pada VSCode --
+ - auto close tag
+ - tag
+ - auto rename tag
+ - better align ( untuk merapikan baris kode )
+ - bracket lens ( memberikan informasi terhadap atas tanda buka dan penutup kurung )
+ - DotEnv ( memberikan style pada file environment )
+ - Error Lens ( memberikan informasi diujung kode, jika terjadi error, ntah kurang titik koma atau kurang kurung )
+ - Github Theme - Github dark dimmed
+ - GitLens
+ - icons fonts
+ - Laravel Extra Intellisense ( untuk memuncul fungsi otomatis di laravel ) 
+ - laravel go to view
+ - laravel model snippet
+ - PHP Intelephense ( ketika kita mengarah kursor ke code, dan klik maka menampilkan sumber kode tersebut ).
+
+**** Database Aplikasi ****
+figma.com/file/yo6M8HfjjNU2tldFAkVaBz/Shamo----Flutter-Laravel-3.0?node-id=0%3A1
+ -- user -- 
+1. username
+2. phone_number
+3. roles
+
+-- Kategori produk --
+1. nama
+
+-- Produk --
+1. nama
+2. harga
+3. deskripsi
+4. tags
+5. Kategori Produk ( table Produk )
+
+-- Galeri Produk --
+1. Produk
+2. url
+
+-- Transaksi --
+1. User
+2. alamat
+3. metode bayar
+4. total harga
+5. total pengiriman ( bagian Shipping )
+6. status
+
+-- Detail Transaksi --
+1. User
+2. Produk
+3. Transaksi
+4. Kuantitas
+
+untuk gambar kita masukkan di storage laravel
+
+**** Membuat Entity RelationshipDiagram ****
+https://lucid.app/documents#/dashboard
+email : ard5070@gmail.com
+pass : ardi000109
+
+-- membuat migration berdasarkan design di lucid app
+** php artisan make:migration add_field_to_users_table --table=users
+ini adalah perintah untuk menambahkan file baru di folder database/migaration dengan nam add_field_to_users.
+hal ini dilakukan supaya kita tidak perlu mengubah2 di file yang sudah ada
+
+**  php artisan make:migration create_product_categories_table --create=product_categories
+digunakan untuk membuat, table baru pada database, tetapi hanya berubah migration dulu.
+php artisan migrate ialah proses migration di code masuk ke database.
+
+** php artisan make:migration create_products_table --create=products
+membuat migraation products
+
+** php artisan make:migration create_product_galleries_table --create=product_galleries
+membuat migration product_galleries
+
+** php artisan make:migration create_transactions_table --create=transactions
+membuat migration table transaksi
+
+** php artisan make:migration create_transaction_items_table --create=transaction_items
+membuat migration table transaksi items
+
+**** Model User ****
+lagnkah awal : masuk ke folder app/Models/user.php
+lalu tambahkan ( username, phone, roles ) setelah email
+ protected $fillable = [
+        'name',
+        'email',
+        'username',
+        'phone',
+        'roles',
+        'password',
+    ];
+
+untuk melakukan relasi antar tabel. 
+masih di model user
+ public function transactions() {
+        return $this->hasMany(Transactions::class, 'user_id', 'id');
+    }
+user_id, yaitu field yang ada di  transactions dan id adalah id pada table user
+
+**** Model Kategori ****
+jika kita hendak membuat database, maka penamaan harus plural tapi untuk model harus singular
+contoh database products ( ada s). model ProductCategory ( CamelCase ).
+
+*** php artisan make:model ProductCategory 
+perintah Git untuk membuat model
+lalu kita menambahkan softDeletes, fillable nya
+use HasFactory, SoftDeletes;
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var string[]
+     */
+    protected $fillable = [
+        'name'
+    ];
+
+*** Model Product ***
+php artisan make:model Product
+perintah membuat model product
+
+*** Model Product Gallery ***
+public function getUrlArrtibute($url) {
+        return config('app.url') . Storage::url($url);
+    }
+ini adalah function yan berfungsi, untuk mengubah string url yang awalnya ( /gambar.jpg ) 
+=> https://laravel.test/gambar.jpg menjadi lebih lengkap.
+biasanya, format ini digunakan pada saat request API.
+
+*** Model Transactions ***
+ php artisan make:model Transaction
+perintah Git untuk membuat model transaction
+
+*** Model TransactionItem ***
+php artisan make:model TransactionItem
+
+
+*** Persiapan API ***
+gist.github.com/galpratama/36ca7e903a73bc46acaa6fb810b7cd13
+menambahkan folder Helpers di dalam app, lalu simpan file ResponseFormatter.php yang diambil dari link diatas.
+namespace diubah menjadi App\Helpers
+
+*** API Produk ***
+persiapan awal, membuat controller Product lalu daftarkan pada file API.
+php artisan make:controller API/ProductController.
+sebelum kita menjalankan perintah diatas, terlebihdahulu buat folder API di dalam folder controller.
+
+*** API Register ***
+Route::post('register', [UserController::class, 'register']);
+mendaftarkan controller pada route.
+
+
+*** Mengamankan File Laravel ***
+ketika melakukan upload ke server, harus mengubah beberapa settingan di file ENV.
+- APP_DEBUG=true diubah menjadi APP_DEBUG=false
+APP_ENV=local diubah menjadi APP_ENV=production
+
+IDCloudHost
+password
+username server ardiansah109
+
+Ardi000109@#$% ( password server )
+ardiansah109
+new password when mysql server : @ardiansah109
+Waiting for cache lock: Could not get lock /var/lib/dpkg/lock-frontend. It is held by process 3583 (unattended-upgr)
+ ps aux | grep -i apt
+root       35582  0.0  0.0   8388   852 pts/0    S+   16:43   0:00 grep --color=auto -i apt
+sudo rm /var/lib/dpkg/lock
+GRANT ALL ON likupedia.* TO 'ardiansah109'@'localhost' IDENTIFIED BY '@ardiansah109' WITH GRANT OPTION;
+CREATE USER 'ardiansah109'@'%' IDENTIFIED BY '@ardiansah109'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';
+github
+ard5070@gmail.com	
+ardi000109
+IP 103.171.84.76
+
+GIT ( Version Control System )
+- Sistem yang menyimpan & mengelola rekaman perubahan dari source code
+- GIT -> salah satu software yang bisa melakukan vcs.
+- folder ygn diinisialisasi dengan GIT disebut Repository / Repo
+- Github Website / Layanan untuk mengelola project GIT
+isitilah pada Git
+repo = folder project kita
+commit = rekaman / snapshot dari repo kita
+hash = penanda unik pada sebuah commit
+checkout = berpindah ke sebuah commit, misalkankita udah ke commit 3 pindah ke commit 2
+branch = cabang bebabs dari sebuah commit, bisa kita yg bikin bisa juga orang lain.
+merge = menggabungkan branch
+remote = sumber yang memiliki repo contoh ( Github )
+clone = mengambil repo dari remote
+push = mengirimkan commit ke repo
+pull = mengambil commit dari repo
+- Riwayat perubahan file disimpan menggunakan serangkaian commit.
+bukan hanya save 
+commit - menambah baris kode
+       - menghapus suatu baris kode
+untuk melihat visual commit
+insight - network
+
+***** Branch *****
+- membuat Git Branch
+- membuat snapshot tanpa mengganggu jalur utama ( master branch ) 
+- fitur Experimental ( belum tau hasil kedepannya ).
+
+***** Fork *****
+menduplikat repo akun lain beserta historynya ( commit ),tanpa mengganggu repo aslinya
+
+***** GIT *****
+$ git init => inisialisasi file di komputer kita
+$ git add <file(s)> menambahkan file pada area tertentu.
+$ git status ==> mengetahui perubahan pada suatu file.
+$ git commit
+$ git config => memasukkan configurasi ke git
+$ git branch
+$ git help
+
+3 area pada repo Git
+- Working tree ( folder yang berisi file2 didalamnya )
+- Staging area ( yaitu kita kasih tau ke git bahwa ada perubahan, 
+perubahan ini akan masuk ke area 3 yaitu :
+- history
+- Staging Area dan History akan dibikin file dengan extension .git yang tersembunyi 
+didalam foldernya sendiri
+- melakukan init pada folder ( masuk ke folder dengan git 
+contoh : c/Users/ardiansah/wpu-test-repo , lalu git init )
+git config --global user.name "Ardiansah"
+git config --global user.email "ard5070@gmail.com"
+jika ketika git commit, masuk ke vim maka, tekan esc lalu tambahkan :q!
+- git commit -m "menambahkan file....."
+- git add . => menambahkan semua file yang belu di tracking ke staging area
+- jika kita punya 2 file baru, dan kita punya 2 file lama yang 
+di edit harus tetap di git add .
+- git log ( untuk melihat semua commit)
+- git log -3 ( melihat commit 3 terakhir )
+- git log -- style.css ( mencari file spesifik )
+
+ini adalah commit ketika ditambahkan
+commit c61224f4047d6b13fda8a1ca7ef250c10b4478c7
+Author: Ardiansah <ard5070@gmail.com>
+Date:   Sun Feb 13 12:25:19 2022 +0700
+
+    mengubah file index dan menambahkan file style.css
+ketika suatu file dihapus, kita ingin mengembalikannya maka :
+- git checkout c6122 -- style.css
+jika suatu file hendak dikembalikan karena sengaja, maka harus di commit kembali
+
+- git commit -am "reason..." => maksud nya -am kita melakukan add terlebih dahulu lalu
+memberikan -m sebagai alasan.
+
+- git branch = cek ada branch apa saja dalam suatu file
+- git branch dosen = membuat branch dosen.
+
+untuk melihat visualisasi pada suatu branch
+git log --all --decorate --oneline --graph
+maka hasilnya :
+* a8408b9 (HEAD -> master, staff, dosen) menambahkan 1 mahasiswa
+* 12b4526 menambahkan data mahasiswa
+* e8c915c menghapus link script
+* 6ae0ed9 menghapus file script.js
+* a9d2989 mengembalikan file style.css
+* 3f8fac8 menghapus file style.css dan menambahkan file script.js
+* c61224f mengubah file index dan menambahkan file style.css
+* e22296d menambahkan file index.html
+- alias graph="git log --all --decorate --oneline --graph" ini proses
+inisialisasi sintaks dari "git log --all --decorate --oneline --graph"
+dan panggil nya
+- $ graph
+untuk berpindah branch ( git checkout <nama_branch> )
+
+- proses penggabungan merge 
+jenis merge ( Fast Forward & Three-Way Merge )
+Fast Forward Merge ( proses penggabungan jalur langsung dengan master )
+pindah dulu Head Pointer ke Master 
+- git merge dosen
+Updating a8408b9..adb219b
+Fast-forward
+ dosen.html | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+ create mode 100644 dosen.html
+
+$ graph
+* ebb8ee5 (staff) Menambahkan file staff.html
+| * adb219b (HEAD -> master, dosen) Menambahkan file dosen.html
+| * df34b0a menambahkan file dosen.html
+|/
+* a8408b9 menambahkan 1 mahasiswa
+* 12b4526 menambahkan data mahasiswa
+* e8c915c menghapus link script
+* 6ae0ed9 menghapus file script.js
+* a9d2989 mengembalikan file style.css
+* 3f8fac8 menghapus file style.css dan menambahkan file script.js
+* c61224f mengubah file index dan menambahkan file style.css
+* e22296d menambahkan file index.html
+jika branch sudah di merge, maka hapus saja branch tersebut dengan cara
+git branch -d <nama_branch> contoh : git branch -d dosen
+sebelum di delete untuk make sure kita cek dulu branch mana yang sudah di merge.
+git branch --merged
+  dosen
+* master
+maka branch dosen sudah di merge dan boleh dihapus.
+Three way merge dilakukan ketika beda line
+:wq! ( untuk close dari Vim tapi menyimpan perubahannya )
+git checkout df34b0a ( berpindah ke commit,head pointer )
+jika sudah diarah ke commit yg diminta, dari commit kita bisa bua branch baru.
+
+***** Git Remote *****
+- git clone https://github.com/Ardiansahhh/wpu-git-test.git
+untuk cloning project dari github ke local computer
+- $ git remote -v
+origin  https://github.com/Ardiansahhh/wpu-git-test.git (fetch)
+origin  https://github.com/Ardiansahhh/wpu-git-test.git (push)
+
+$ git status
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+maksudnya ialah, commit di local mendahulu 1 commit yang ada di origin remotenya.
+maka harus di push ke remote nya..
+- maka kita harus seperti ini :
+$ git push
+Enumerating objects: 4, done.
+Counting objects: 100% (4/4), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 483 bytes | 241.00 KiB/s, done.
+Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/Ardiansahhh/wpu-git-test.git
+   90cb30e..8b7887c  main -> main
+biasanya, perintah ini akan login ke akun github terlebih dahulu.
+jika kita git push sekali lagi maka :
+$ git push
+Everything up-to-date
+---- jika ingin upload repo ke github, maka 
+1. buat repo barudi github tapi readme jangan di checklist.
+2. jika file ini benar2 baru, baik dilocal maupun github maka kita jalankan
+echo "# wpu-git-test2" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/Ardiansahhh/wpu-git-test2.git
+git push -u origin main
+tapi jika dilocal sudah ada maka :
+git remote add origin https://github.com/Ardiansahhh/wpu-git-test2.git
+fungsi  dari git fetch, cek di github commit digithub sudah sampai mana.
+ketika terjadi konflik, harus di git pull, gunanya untuk mengambil konflik yang
+ada di github masuk ke local komputer kita
+
+ardiansah@DESKTOP-TJEL8AS MINGW64 ~/wpu-git-test2 (master)
+$ git push
+To https://github.com/Ardiansahhh/wpu-git-test2.git
+ ! [rejected]        master -> master (fetch first)
+error: failed to push some refs to 'https://github.com/Ardiansahhh/wpu-git-test2.git'
+hint: Updates were rejected because the remote contains work that you do
+hint: not have locally. This is usually caused by another repository pushing
+hint: to the same ref. You may want to first integrate the remote changes
+hint: (e.g., 'git pull ...') before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+
+ardiansah@DESKTOP-TJEL8AS MINGW64 ~/wpu-git-test2 (master)
+$ git fetch
+
+remote: Enumerating objects: 4, done.
+remote: Counting objects: 100% (4/4), done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+Unpacking objects: 100% (3/3), 689 bytes | 32.00 KiB/s, done.
+From https://github.com/Ardiansahhh/wpu-git-test2
+   b63b3e5..fb906f2  master     -> origin/master
+
+ardiansah@DESKTOP-TJEL8AS MINGW64 ~/wpu-git-test2 (master)
+$
+
+ardiansah@DESKTOP-TJEL8AS MINGW64 ~/wpu-git-test2 (master)
+$ git status
+On branch master
+Your branch and 'origin/master' have diverged,
+and have 1 and 1 different commits each, respectively.
+  (use "git pull" to merge the remote branch into yours)
+
+nothing to commit, working tree clean
+
+ardiansah@DESKTOP-TJEL8AS MINGW64 ~/wpu-git-test2 (master)
+$ git pull
+CONFLICT (add/add): Merge conflict in style.css
+Auto-merging style.css
+Automatic merge failed; fix conflicts and then commit the result.
+
+ardiansah@DESKTOP-TJEL8AS MINGW64 ~/wpu-git-test2 (master|MERGING)
+$ git add .
+
+ardiansah@DESKTOP-TJEL8AS MINGW64 ~/wpu-git-test2 (master|MERGING)
+$ git commit -m "mengubah isi file style.css"
+[master afdba8f] mengubah isi file style.css
+
+ardiansah@DESKTOP-TJEL8AS MINGW64 ~/wpu-git-test2 (master)
+$ git status
+On branch master
+Your branch is ahead of 'origin/master' by 2 commits.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+
+ardiansah@DESKTOP-TJEL8AS MINGW64 ~/wpu-git-test2 (master)
+$ git push
+Enumerating objects: 7, done.
+Counting objects: 100% (7/7), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (4/4), 499 bytes | 499.00 KiB/s, done.
+Total 4 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/Ardiansahhh/wpu-git-test2.git
+   fb906f2..afdba8f  master -> master
