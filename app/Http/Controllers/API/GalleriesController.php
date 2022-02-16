@@ -17,4 +17,5 @@ class GalleriesController extends Controller
         $model->save();
         return ResponseFormatter::success(DB::table('product_galleries')->get(), "Data Saved");
     }
+
 }
