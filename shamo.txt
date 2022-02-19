@@ -163,6 +163,9 @@ ketika melakukan upload ke server, harus mengubah beberapa settingan di file ENV
 APP_ENV=local diubah menjadi APP_ENV=production
 
 IDCloudHost
+my.idcloudhost
+email : ard5070@gmail.com
+pass : @Ardiansah_109@#$%
 password
 username server ardiansah109
 

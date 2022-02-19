@@ -34,6 +34,7 @@ Route::patch('ediID', [UserController::class, 'editID']);
 Route::get('tryRegister', [UserController::class, 'tryRegister']);
 Route::post('trylogin', [UserController::class, 'trylogin']);
 Route::post('try', [UserController::class, 'try']);
+Route::get('addProducts', [ProductController::class, 'allProducts']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('user', [UserController::class, 'fetch']);

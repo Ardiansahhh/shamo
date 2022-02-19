@@ -81,4 +81,9 @@ class ProductController extends Controller
         return ResponseFormatter::success(DB::table('products')->get(), 'Data Saved');
     }
 
+    public function allProducts() {
+        $users = DB::table('products')->get();
+        return response()->json($users);
+    }
+
 }
